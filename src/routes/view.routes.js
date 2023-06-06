@@ -17,9 +17,9 @@ router.route('/posts').get(authController.protect, viewController.displayPosts);
 
 router.route('/posts/:postId').get(viewController.displayPostDetailById);
 
-router.route('/auth/login').get(viewController.displayLoginPage);
+router.route('/auth/login').get(authController.checkLoggedIn, viewController.displayLoginPage);
 
-router.route('/auth/register').get(viewController.displayRegisterPage);
+router.route('/auth/register').get(authController.checkLoggedIn, viewController.displayRegisterPage);
 
 router.route('/auth/logout').get(authController.logout);
 

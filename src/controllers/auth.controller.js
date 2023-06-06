@@ -59,7 +59,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user | user.password !== password) {
+  if (!user | (user.password !== password)) {
     return next(new AppError("Incorrect username or password!"), 401);
   }
   this.createSendToken(user, 200, res);
@@ -67,7 +67,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.logout = catchAsync(async (req, res, next) => {
   const cookieOptions = {
-    expires: new Date(Date.now() + 10 * 1000),
+    expires: new Date(Date.now() + 5 * 1000),
     httpOnly: true,
   };
   res.cookie("jwt", "log-out", cookieOptions);
@@ -97,7 +97,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.cookies.jwt;
   }
   if (!token) {
-    res.redirect('/view/auth/login');
+    res.redirect("/view/auth/login");
     return next(
       new AppError("You are not logged in! Please login to get access", 401)
     );
@@ -149,10 +149,12 @@ exports.isLoggedIn = async (req, res, next) => {
 };
 
 exports.checkLoggedIn = async (req, res, next) => {
-  if (req.user) {
+  let token = req.cookies.jwt;
+
+  if (!token) {
     return next();
   } else {
-    res.redirect("/view/auth/login");
+    res.redirect("/view/home-page");
   }
 };
 

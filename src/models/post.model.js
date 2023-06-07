@@ -27,7 +27,7 @@ const postSchema = new mongoose.Schema(
     },
     postPicture: {
       type: String,
-      default: "https://nqwebdesign.com/wp-content/uploads/2020/01/blog-icon.png"
+      default: "/img/1686120345198-992272796.png"
     }
   },
   {

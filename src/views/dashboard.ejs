@@ -101,7 +101,10 @@
                               <span aria-hidden="true">&times;</span>
                             </button>
                           </div>
-                          <form id="userProfileForm">
+                          <form
+                            id="userProfileForm"
+                            enctype="multipart/form-data"
+                          >
                             <div class="modal-body">
                               <input
                                 type="hidden"
@@ -160,11 +163,11 @@
                                   >Profile picture</label
                                 >
                                 <input
-                                  type="text"
+                                  type="file"
                                   class="form-control"
                                   id="profilePicture1"
-                                  name="profilePicture"
                                   value="<%= user.profilePicture %>"
+                                  required
                                 />
                               </div>
                             </div>
@@ -267,17 +270,44 @@
         return `${year}-${month}-${day}`;
       }
 
+      // const userId = document.getElementById("userId").value;
+      // form.addEventListener("submit", function (event) {
+      //   event.preventDefault(); // Prevent the default form submission
+
+      //   const formData = new FormData(form);
+      //   const data = Object.fromEntries(formData.entries());
+
+      //   const requestOptions = {
+      //     method: "PATCH",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(data),
+      //   };
+
+      //   fetch(`/api/users/${userId}`, requestOptions)
+      //     .then((response) => response.json())
+      //     .then((result) => {
+      //       console.log("Resource updated:", result);
+      //       // Perform any necessary actions after successful update
+      //       location.reload();
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error updating resource:", error);
+      //       // Handle any error that occurred during update
+      //     });
+      // });
+
       const userId = document.getElementById("userId").value;
       form.addEventListener("submit", function (event) {
         event.preventDefault(); // Prevent the default form submission
 
         const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
+        const fileInput = document.getElementById("profilePicture1");
+        if (fileInput.files.length > 0) {
+          formData.append("image", fileInput.files[0]);
+        }
         const requestOptions = {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: formData,
         };
 
         fetch(`/api/users/${userId}`, requestOptions)

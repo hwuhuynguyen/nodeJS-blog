@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
     },
     profilePicture: {
       type: String,
-      default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShV6COs5cj-_AZyyLagu0kCIxox3yf4EnRhyQjJlnoTHjwosJvYR9mTGPH86rDZPF2qgc&usqp=CAU",
+      default: "/img/1686112105983-552835236.png",
     },
     dateOfBirth: {
       type: Date,

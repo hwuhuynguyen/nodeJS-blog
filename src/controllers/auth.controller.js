@@ -1,10 +1,24 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
-
+const multer = require("multer");
 const User = require("../models/user.model");
+const path = require("path");
 
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "src/public/img");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const fileExtension = file.originalname.split(".").pop();
+    cb(null, uniqueSuffix + "." + fileExtension);
+  },
+});
+
+var upload = multer({ storage: storage });
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -37,19 +51,33 @@ exports.createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    gender: req.body.gender,
-    profilePicture: req.body.profilePicture,
-    dateOfBirth: req.body.dateOfBirth,
-    role: req.body.role,
+  upload.single("profilePicture")(req, res, async (err) => {
+    if (err) {
+      // Handle the error if the file upload fails
+      console.error(err);
+      return next(err);
+    }
+
+    let convertedPath =
+      "/" +
+      path.relative("src/public", req.file.path);
+
+    const newUser = await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      gender: req.body.gender,
+      profilePicture: convertedPath,
+      dateOfBirth: req.body.dateOfBirth,
+      role: req.body.role,
+    });
+
+    // // Access the uploaded file information
+    console.log(newUser);
+
+    this.createSendToken(newUser, 201, res);
+    // Continue with other signup logic
   });
-
-  console.log(newUser);
-
-  this.createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {

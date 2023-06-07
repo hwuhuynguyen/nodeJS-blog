@@ -1,9 +1,11 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const express = require("express");
-const connect_database = require("./config/database.config");
+const multer = require("multer");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+
+const connect_database = require("./config/database.config");
 const authRouter = require("./routes/auth.routes");
 const userRouter = require("./routes/user.routes");
 const postRoutes = require("./routes/post.routes");
@@ -30,12 +32,29 @@ app.use(express.static(path.join(__dirname, "public")));
 //   res.render('home-page')
 // })
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "src/public/img");
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.body.name);
+  },
+});
+
+var upload = multer({ storage: storage });
+
+
 app.use("/view", viewRoutes);
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/posts", postRoutes);
 // app.use('/api/comments', commentRoutes);
+
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  console.log(req.body);
+  res.status(200).json("File uploaded successfully");
+});
 
 app.all("*", (req, res, next) => {
   res

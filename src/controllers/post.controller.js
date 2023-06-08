@@ -18,7 +18,9 @@ const storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 exports.getAllPosts = async function (req, res, next) {
-  const posts = await Post.find();
+  const date = Date.now();
+  const posts = await Post.find().populate("comments");
+  console.log("Find all: ", Date.now() - date);
   //   const jwt = res.headers['jwt'];
   res.status(200).json({
     status: "success",
@@ -31,7 +33,7 @@ exports.getAllPosts = async function (req, res, next) {
 
 exports.getPostById = async function (req, res, next) {
   const time = Date.now();
-  const post = await Post.findById(req.params.id);
+  const post = await Post.findById(req.params.id).populate("comments");
   // const post = await Post.findById(req.params.id).populate('comments');
 
   // const comments = await Comment.find({ post: req.params.id });

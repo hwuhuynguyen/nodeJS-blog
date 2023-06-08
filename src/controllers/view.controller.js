@@ -38,8 +38,9 @@ exports.displayHomePage = async function (req, res, next) {
     }
   ]);
   console.log(activeUsers);
-
-  const posts = await Post.find();
+  const date =  Date.now();
+  const posts = await Post.find().populate("comments");
+  console.log("Find all: ", Date.now() - date);
   const recentPosts = await Post.find().sort({ createdAt: -1 }).limit(5);
 
   res.render("home-page", {
@@ -50,7 +51,7 @@ exports.displayHomePage = async function (req, res, next) {
 };
 
 exports.displayPosts = async function (req, res, next) {
-  const posts = await Post.find();
+  const posts = await Post.find().populate("comments");
 
   res.render("post-list", {
     posts,
@@ -75,7 +76,7 @@ exports.displayRegisterPage = async function (req, res, next) {
 };
 
 exports.displayDashboard = async function (req, res, next) {
-  const myPosts = await Post.find({ author: req.user.id });
+  const myPosts = await Post.find({ author: req.user.id }).populate("comments");
   // console.log(req.user.id);
   // console.log(myPosts);
   res.render("dashboard", {

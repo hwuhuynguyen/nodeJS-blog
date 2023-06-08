@@ -6,10 +6,10 @@ const router = express.Router({ mergeParams: true });
 
 router
   .route("/comment")
-  .get(authController.protect, likeController.checkIfUserLikedComment, likeController.getLikeInComment);
+  .patch(authController.protect, likeController.getLikeInComment);
 
   router
   .route("/post")
-  .get(authController.protect, likeController.checkIfUserLikedPost, likeController.getLikeInPost);
+  .patch(authController.protect, likeController.getLikeInPost);
 
 module.exports = router;

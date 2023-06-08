@@ -6,6 +6,7 @@ const likeRouter = require("../routes/like.routes");
 const router = express.Router({ mergeParams: true });
 
 router.use('/:commentId/like', likeRouter);
+
 router
   .route("/")
   .get(commentController.getAllCommentsByPost)

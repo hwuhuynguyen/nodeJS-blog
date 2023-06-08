@@ -51,25 +51,3 @@ exports.getLikeInComment = async function (req, res, next) {
     },
   });
 };
-
-exports.checkIfUserLikedPost = async function (req, res, next) {
-  console.log("check if user liked this post");
-  // const post = await Post.findById(req.params.postId);
-  // let users = post.like;
-  // if (users.includes(req.user.id)) {
-  //   req.isLiked = true;
-  //   return next();
-  // }
-  next();
-};
-
-exports.checkIfUserLikedComment = async function (req, res, next) {
-  console.log("check if user liked this comment");
-  // const comment = await Comment.findById(req.params.commentId);
-  // let users = comment.like;
-  // if (users.includes(req.user.id)) {
-  //   req.isLiked = true;
-  //   return next();
-  // }
-  next();
-};

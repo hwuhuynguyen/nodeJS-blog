@@ -196,20 +196,22 @@
             <% myPosts.forEach(function(post) { %>
             <div class="col-sm-4">
               <div class="card">
-                <!-- Card img -->
-                <% if (typeof post.postPicture != 'undefined') { %>
-                <div>
-                  <img
-                    style="height: 320px"
-                    class="card-img"
-                    src="<%= post.postPicture %>"
-                  />
-                </div>
-                <% } else { %>
-                <div>
-                  <img class="card-img" src="/images/blog/4by3/12.jpg" />
-                </div>
-                <% } %>
+                <a href="/view/posts/<%= post.id %>">
+                  <!-- Card img -->
+                  <% if (typeof post.postPicture != 'undefined') { %>
+                  <div>
+                    <img
+                      style="height: 320px"
+                      class="card-img"
+                      src="<%= post.postPicture %>"
+                    />
+                  </div>
+                  <% } else { %>
+                  <div>
+                    <img class="card-img" src="/images/blog/4by3/12.jpg" />
+                  </div>
+                  <% } %>
+                </a>
                 <div class="card-body">
                   <h4 class="card-title">
                     <a href="/view/posts/<%= post.id %>"> <%= post.title %> </a>
@@ -245,6 +247,12 @@
                     <li class="nav-item">
                       • <%= post.createdAt.toLocaleDateString('en-US', { month:
                       'long', day: 'numeric', year: 'numeric' }) %>
+                    </li>
+                    <li class="nav-item">
+                      • <span><i class="bi bi-hand-thumbs-up"></i></span> <%= post.like.length %>
+                    </li>
+                    <li class="nav-item">
+                      • <span><i class="bi bi-chat-right"></i></span> <%= post.comments.length %>
                     </li>
                   </ul>
                 </div>

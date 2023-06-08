@@ -280,7 +280,7 @@
           const response = await fetch(
             `/api/posts/${postId}/comments/${commentId}/like/comment`,
             {
-              method: "GET",
+              method: "PATCH",
             }
           );
 
@@ -313,7 +313,7 @@
 
           // Make an AJAX request to the server to update the like count
           const response = await fetch(`/api/posts/${postId}/like/post`, {
-            method: "GET",
+            method: "PATCH",
           });
 
           if (!response.ok) {

@@ -58,7 +58,11 @@
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
-                      <form method="POST" action="/api/posts" enctype="multipart/form-data">
+                      <form
+                        method="POST"
+                        action="/api/posts"
+                        enctype="multipart/form-data"
+                      >
                         <div class="modal-body">
                           <div class="form-group">
                             <label for="title1">Title</label>
@@ -112,23 +116,22 @@
                 <% posts.forEach(function(post) { %>
                 <div class="col-sm-4">
                   <div class="card">
-                    <!-- Card img -->
-                    <% if (typeof post.postPicture != 'undefined') { %>
+                    <a href="/view/posts/<%= post.id %>">
+                      <!-- Card img -->
+                      <% if (typeof post.postPicture != 'undefined') { %>
                       <div>
                         <img
-                          style="height: 320px;"
+                          style="height: 320px"
                           class="card-img"
                           src="<%= post.postPicture %>"
                         />
                       </div>
                       <% } else { %>
-                        <div>
-                          <img
-                            class="card-img"
-                            src="/images/blog/4by3/12.jpg"
-                          />
-                        </div>
-                        <% } %>
+                      <div>
+                        <img class="card-img" src="/images/blog/4by3/12.jpg" />
+                      </div>
+                      <% } %>
+                    </a>
                     <div class="card-body">
                       <h4 class="card-title">
                         <a href="/view/posts/<%= post.id %>">
@@ -142,19 +145,20 @@
                           <div class="nav-link">
                             <div class="avatar-box">
                               <div class="avatar">
-                                <% if (typeof post.author.profilePicture != 'undefined') { %>
-                                  <img
-                                  style="aspect-ratio: 5/4;"
+                                <% if (typeof post.author.profilePicture !=
+                                'undefined') { %>
+                                <img
+                                  style="aspect-ratio: 5/4"
                                   class=""
                                   src="<%= post.author.profilePicture %>"
                                 />
                                 <% } else { %>
-                                    <img
-                                    style="aspect-ratio: 5/4;"
-                                    class=""
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShV6COs5cj-_AZyyLagu0kCIxox3yf4EnRhyQjJlnoTHjwosJvYR9mTGPH86rDZPF2qgc&usqp=CAU"
-                                  />
-                                  <% } %>
+                                <img
+                                  style="aspect-ratio: 5/4"
+                                  class=""
+                                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShV6COs5cj-_AZyyLagu0kCIxox3yf4EnRhyQjJlnoTHjwosJvYR9mTGPH86rDZPF2qgc&usqp=CAU"
+                                />
+                                <% } %>
                               </div>
                               <span class="author">
                                 <a href="#"> <%= post.author.name %> </a></span
@@ -165,6 +169,12 @@
                         <li class="nav-item">
                           • <%= post.createdAt.toLocaleDateString('en-US', {
                           month: 'long', day: 'numeric', year: 'numeric' }) %>
+                        </li>
+                        <li class="nav-item">
+                          • <span><i class="bi bi-hand-thumbs-up"></i></span> <%= post.like.length %>
+                        </li>
+                        <li class="nav-item">
+                          • <span><i class="bi bi-chat-right"></i></span> <%= post.comments.length %>
                         </li>
                       </ul>
                     </div>

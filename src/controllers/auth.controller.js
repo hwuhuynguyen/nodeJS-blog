@@ -114,6 +114,7 @@ exports.restrictTo =
   };
 
 exports.protect = catchAsync(async (req, res, next) => {
+  const date = Date.now();
   // 1. Getting token and check if it's there
   let token;
   if (
@@ -147,6 +148,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   // GRANT ACCESS TO PROTECTED ROUTE
   res.locals.user = currentUser;
   req.user = currentUser;
+  console.log("Auth: ", Date.now() - date);
   next();
 });
 

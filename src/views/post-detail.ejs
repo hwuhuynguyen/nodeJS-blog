@@ -55,6 +55,7 @@
                 </li>
                 <li class="nav-item">
                   <button
+                    id="likePost-button"
                     class="btn btn-primary"
                     onclick="likePost('<%= post.id %>')"
                   >
@@ -225,6 +226,7 @@
             <h5><%= comment.content %></h5>
             <p class="m-0">User: <%= comment.user.name %></p>
             <button
+              id="likeComment-<%= comment.id %>-button"
               class="btn btn-primary"
               onclick="likeComment('<%= comment.post.id %>', '<%= comment.id %>')"
             >
@@ -269,6 +271,10 @@
         try {
           console.log("postId: " + postId);
           console.log("commentId: " + commentId);
+          const button = document.getElementById(
+            `likeComment-${commentId}-button`
+          );
+          button.classList.add("disabled");
 
           // Make an AJAX request to the server to update the like count
           const response = await fetch(
@@ -292,6 +298,7 @@
           );
           likeCountElement.textContent =
             updatedComment.data.comment.like.length;
+          button.classList.remove("disabled");
         } catch (error) {
           console.log("error");
           console.error(error);
@@ -300,6 +307,8 @@
 
       async function likePost(postId) {
         try {
+          const button = document.getElementById("likePost-button");
+          button.classList.add("disabled");
           console.log("postId: " + postId);
 
           // Make an AJAX request to the server to update the like count
@@ -320,6 +329,7 @@
             `likeCount-${postId}`
           );
           likeCountElement.textContent = updatedPost.data.post.like.length;
+          button.classList.remove("disabled");
         } catch (error) {
           console.log("error");
           console.error(error);

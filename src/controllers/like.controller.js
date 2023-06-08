@@ -4,15 +4,20 @@ const Comment = require("../models/comment.model");
 
 exports.getLikeInPost = async function (req, res, next) {
   console.log("get like in post");
+  const date = Date.now();
   const post = await Post.findById(req.params.postId);
-  let likeList = post.like;
+  console.log(Date.now() - date);
+
+  let users = post.like;
   console.log(req.isLiked);
-  if (!req.isLiked) {
-    likeList.push(req.user.id);
+  
+  if (!users.includes(req.user.id)) {
+    users.push(req.user.id);
   } else {
-    likeList.pull(req.user.id);
+    users.pull(req.user.id);
   }
-  await post.save();
+  post.save(); // get rid of await
+  console.log(Date.now() - date);
   console.log(req.user.id);
   res.status(200).json({
     status: "success",
@@ -20,20 +25,25 @@ exports.getLikeInPost = async function (req, res, next) {
       post,
     },
   });
+  console.log(Date.now() - date);
+
 };
 
 exports.getLikeInComment = async function (req, res, next) {
   console.log("get like in comment");
-  console.log(req.isLiked);
+  const date = Date.now();
   const comment = await Comment.findById(req.params.commentId);
-  let likeList = comment.like;
-  if (!req.isLiked) {
-    likeList.push(req.user.id);
+  console.log(Date.now() - date);
+
+  let users = comment.like;
+  if (!users.includes(req.user.id)) {
+    users.push(req.user.id);
   } else {
-    likeList.pull(req.user.id);
+    users.pull(req.user.id);
   }
-  await comment.save();
+  comment.save();
   console.log(req.user.id);
+  console.log(Date.now() - date);
   res.status(200).json({
     status: "success",
     data: {
@@ -44,22 +54,22 @@ exports.getLikeInComment = async function (req, res, next) {
 
 exports.checkIfUserLikedPost = async function (req, res, next) {
   console.log("check if user liked this post");
-  const post = await Post.findById(req.params.postId);
-  let users = post.like;
-  if (users.includes(req.user.id)) {
-    req.isLiked = true;
-    return next();
-  }
+  // const post = await Post.findById(req.params.postId);
+  // let users = post.like;
+  // if (users.includes(req.user.id)) {
+  //   req.isLiked = true;
+  //   return next();
+  // }
   next();
 };
 
 exports.checkIfUserLikedComment = async function (req, res, next) {
   console.log("check if user liked this comment");
-  const comment = await Comment.findById(req.params.commentId);
-  let users = comment.like;
-  if (users.includes(req.user.id)) {
-    req.isLiked = true;
-    return next();
-  }
+  // const comment = await Comment.findById(req.params.commentId);
+  // let users = comment.like;
+  // if (users.includes(req.user.id)) {
+  //   req.isLiked = true;
+  //   return next();
+  // }
   next();
 };

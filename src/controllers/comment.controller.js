@@ -27,7 +27,7 @@ exports.getCommentById = async function (req, res, next) {
     });
   }
 
-  res.status(200).json({
+  res.status(200).json({ 
     status: "success",
     data: comment,
   });
@@ -47,6 +47,9 @@ exports.getAllCommentsByPost = async function (req, res, next) {
 exports.createComment = async function (req, res, next) {
   if (!req.body.post) req.body.post = req.params.postId;
   if (!req.body.user) req.body.user = req.user.id;
+  console.log("REQUEST: ", req.body);
+  console.log("END REQUEST");
+  
   const comment = new Comment(req.body);
   if (!req.params.commentId) comment.path = comment.id;
   else {
@@ -56,13 +59,13 @@ exports.createComment = async function (req, res, next) {
   console.log(comment);
 
   const savedComment = await comment.save();
-  res.redirect('/view/posts/' + req.params.postId);
-  // res.status(201).json({
-  //   status: "success",
-  //   post: req.body.post,
-  //   user: req.body.user,
-    // data: savedComment,
-  // });
+  // res.redirect('/view/posts/' + req.params.postId);
+  res.status(200).json({
+    status: "success",
+    post: req.body.post,
+    user: req.body.user,
+    data: savedComment,
+  });
 };
 
 exports.getSubCommentsByCommentId = async (req, res, next) => {

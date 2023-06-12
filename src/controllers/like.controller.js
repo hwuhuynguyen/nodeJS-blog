@@ -9,7 +9,6 @@ exports.getLikeInPost = async function (req, res, next) {
   console.log(Date.now() - date);
 
   let users = post.like;
-  console.log(req.isLiked);
   
   if (!users.includes(req.user.id)) {
     users.push(req.user.id);
@@ -34,7 +33,6 @@ exports.getLikeInComment = async function (req, res, next) {
   const date = Date.now();
   const comment = await Comment.findById(req.params.commentId);
   console.log(Date.now() - date);
-
   let users = comment.like;
   if (!users.includes(req.user.id)) {
     users.push(req.user.id);

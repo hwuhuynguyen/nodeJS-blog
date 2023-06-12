@@ -54,15 +54,17 @@
                   >
                 </li>
                 <li class="nav-item">
+                  <% if (typeof user != 'undefined') { %>
                   <button
                     id="likePost-button"
-                    class="btn btn-primary"
+                    style="border: 1px solid blue"
+                    class="btn <% if (post.isLiked == true) { %> btn-primary <% } else { %> btn-light <% } %>"
                     onclick="likePost('<%= post.id %>')"
                   >
                     Like
                   </button>
-                  <% if (typeof user == 'undefined') { %> <% } else { %> <% if
-                  (user.id === post.author.id) { %>
+                  <% } %> <% if (typeof user == 'undefined') { %> <% } else { %>
+                  <% if (user.id === post.author.id) { %>
                   <a
                     class="btn btn-warning"
                     href="#"
@@ -200,12 +202,14 @@
           </div>
         </div>
 
+        <% if (typeof user != 'undefined') { %>
         <div class="p-3">
           <h2>Comment</h2>
           <div>
-            <form action="/api/posts/<%= post.id %>/comments" method="POST">
+            <form id="commentForm-<%= post.id %>">
               <input type="hidden" name="id" value="<%= post.id %>" />
               <textarea
+                id="commentTextarea-<%= post.id %>"
                 type="text"
                 name="content"
                 cols="100"
@@ -213,7 +217,13 @@
                 required
               ></textarea
               ><br />
-              <button class="btn btn-warning" type="submit">Comment</button>
+              <button
+                class="btn btn-warning"
+                type="submit"
+                onclick="createComment1('<%= post.id %>')"
+              >
+                Comment
+              </button>
             </form>
           </div>
           <% comments.forEach(comment => { %>
@@ -225,14 +235,16 @@
             <% } %>
             <h5><%= comment.content %></h5>
             <p class="m-0">User: <%= comment.user.name %></p>
+            <% if (typeof user != 'undefined') { %>
             <button
               id="likeComment-<%= comment.id %>-button"
-              class="btn btn-primary"
+              style="border: 1px solid blue"
+              class="btn <% if (comment.isLiked == true) { %> btn-primary <% } else { %> btn-light <% } %>"
               onclick="likeComment('<%= comment.post.id %>', '<%= comment.id %>')"
             >
               Like
             </button>
-
+            <% } %>
             <!-- <button class="btn btn-warning">Reply</button> -->
             <span class="strong">Like: </span>
             <span id="likeCount-<%= comment.id %>"
@@ -240,30 +252,37 @@
             >
             <!-- reply comment -->
             <div class="pt-2">
-              <form
-                action="/api/posts/<%= post.id %>/comments/<%= comment.id %>"
-                method="POST"
-              >
+              <form id="replyForm-<%= comment.id %>">
                 <input
                   type="hidden"
                   name="commentId"
                   value="<%= comment.id %>"
                 />
                 <textarea
+                  id="replyTextarea-<%= comment.id %>"
                   type="text"
-                  name="content"
+                  name="content-"
                   cols="100"
                   rows="1"
                   required
                 ></textarea
                 ><br />
-                <button class="btn btn-warning" type="submit">Reply</button>
+                <button
+                  class="btn btn-warning"
+                  type="submit"
+                  onclick="replyComment1('<%= comment.post.id %>', '<%= comment.id %>')"
+                >
+                  Reply
+                </button>
               </form>
             </div>
             <!-- end reply comment -->
           </div>
           <% }) %>
         </div>
+        <% } else { %>
+        <h2 class="my-5 text-center">Login to see the comments</h2>
+        <% } %>
       </div>
     </main>
     <script>
@@ -271,9 +290,13 @@
         try {
           console.log("postId: " + postId);
           console.log("commentId: " + commentId);
+          const likeCountElement = document.getElementById(
+            `likeCount-${commentId}`
+          );
           const button = document.getElementById(
             `likeComment-${commentId}-button`
           );
+          const likeCountBefore = likeCountElement.textContent;
           button.classList.add("disabled");
 
           // Make an AJAX request to the server to update the like count
@@ -293,11 +316,17 @@
           console.log(updatedComment);
 
           // Update the like count displayed on the webpage
-          const likeCountElement = document.getElementById(
-            `likeCount-${commentId}`
-          );
           likeCountElement.textContent =
             updatedComment.data.comment.like.length;
+          if (
+            updatedComment.data.comment.like.length > parseInt(likeCountBefore)
+          ) {
+            button.classList.add("btn-primary");
+            button.classList.remove("btn-light");
+          } else {
+            button.classList.add("btn-light");
+            button.classList.remove("btn-primary");
+          }
           button.classList.remove("disabled");
         } catch (error) {
           console.log("error");
@@ -308,6 +337,10 @@
       async function likePost(postId) {
         try {
           const button = document.getElementById("likePost-button");
+          const likeCountElement = document.getElementById(
+            `likeCount-${postId}`
+          );
+          const likeCountBefore = likeCountElement.textContent;
           button.classList.add("disabled");
           console.log("postId: " + postId);
 
@@ -325,10 +358,15 @@
           console.log(updatedPost);
 
           // Update the like count displayed on the webpage
-          const likeCountElement = document.getElementById(
-            `likeCount-${postId}`
-          );
+
           likeCountElement.textContent = updatedPost.data.post.like.length;
+          if (updatedPost.data.post.like.length > parseInt(likeCountBefore)) {
+            button.classList.add("btn-primary");
+            button.classList.remove("btn-light");
+          } else {
+            button.classList.add("btn-light");
+            button.classList.remove("btn-primary");
+          }
           button.classList.remove("disabled");
         } catch (error) {
           console.log("error");
@@ -346,7 +384,6 @@
 
           const formData = new FormData(form);
           const fileInput = document.getElementById("profilePicture1");
-
           // const data = Object.fromEntries(formData.entries());
 
           // const requestOptions = {
@@ -374,6 +411,62 @@
               console.error("Error updating resource:", error);
               // Handle any error that occurred during update
             });
+        });
+      }
+
+      async function createComment1(postId) {
+        console.log("Creating comment");
+        const form = document.getElementById(`commentForm-${postId}`);
+        const textarea = document.getElementById(`commentTextarea-${postId}`);
+
+        form.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          console.log("form: ", form);
+
+          const content = textarea.value;
+
+          console.log("action:", content);
+          const response = await fetch(`/api/posts/${postId}/comments`, {
+            method: "POST",
+            body: JSON.stringify({ content }),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Failed to add new comment");
+          }
+          document.location.reload();
+        });
+      }
+
+      async function replyComment1(postId, commentId) {
+        const form = document.getElementById(`replyForm-${commentId}`);
+        const textarea = document.getElementById(`replyTextarea-${commentId}`);
+
+        form.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          console.log("form: ", form);
+
+          const content = textarea.value;
+
+          console.log("action:", content);
+          const response = await fetch(
+            `/api/posts/${postId}/comments/${commentId}`,
+            {
+              method: "POST",
+              body: JSON.stringify({ content }),
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to add new reply comment");
+          }
+          document.location.reload();
         });
       }
     </script>
